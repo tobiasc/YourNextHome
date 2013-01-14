@@ -12,13 +12,28 @@ var search = function(){
 		max_lng = 180;
 		min_lng = -180;
 	}
+
+	// create the tags query parameter
+	var tags = '';
+	$('.tag_class').each(function(index) {
+		if($(this).attr('checked')) {
+			tags += $(this).val() + ',';
+		}
+	});
 	
 	// do the search
 	$.post("http://54.228.248.212/imapper/search.php", {
 			"max_lat": max_lat, 
 			"min_lat": min_lat, 
 			"max_lng": max_lng, 
-			"min_lng": min_lng
+			"min_lng": min_lng,
+			"max_size": $("#max_size").html(),
+			"min_size": $("#min_size").html(),
+			"max_price": $("#max_price").html(),
+			"min_price": $("#min_price").html(),
+			"max_rooms": $("#max_rooms").html(),
+			"min_rooms": $("#min_rooms").html(),
+			"tags": tags
 		}, function(data) {
 
 			// only insert markers that are not already on the map
@@ -72,7 +87,7 @@ var centerMap = function(map){
 	}
 };
 
-function initializeSearchMap() {
+var initializeSearchMap = function() {
 	var yourStartLatLng = new google.maps.LatLng(window.lat, window.lng);
 	var mapOptions = {
 		zoom: 13,
@@ -85,7 +100,84 @@ function initializeSearchMap() {
 		window.map_changed = true;
 		search();
 	});
-}		
+};
+
+// enable sliders on page load
+var enableSliders = function() {
+	// price
+	$("#price_slider").slider({
+		range: true,
+		min: 0,
+		max: 4000,
+		step: 50,
+		values: [0, 4000],
+		slide: function( event, ui ) {
+			$("#min_price").html(ui.values[0]);
+			$("#max_price").html(ui.values[1]);
+		},
+		change: function(event, ui) {
+			$("#min_price").html(ui.values[0]);
+			$("#max_price").html(ui.values[1]);
+			search();
+		}
+	});
+	$("#min_price").html($("#price_slider").slider("values", 0));
+	$("#max_price").html($("#price_slider").slider("values", 1));
+
+	// size
+	$("#size_slider").slider({
+		range: true,
+		min: 0,
+		max: 300,
+		step: 5,
+		values: [0, 300],
+		slide: function( event, ui ) {
+			$("#min_size").html(ui.values[0]);
+			$("#max_size").html(ui.values[1]);
+		},
+		change: function(event, ui) {
+			$("#min_size").html(ui.values[0]);
+			$("#max_size").html(ui.values[1]);
+			search();
+		}
+	});
+	$("#min_size").html($("#size_slider").slider("values", 0));
+	$("#max_size").html($("#size_slider").slider("values", 1));
+
+	// rooms
+	$("#rooms_slider").slider({
+		range: true,
+		min: 0,
+		max: 10,
+		step: 1,
+		values: [0, 10],
+		slide: function( event, ui ) {
+			$("#min_rooms").html(ui.values[0]);
+			$("#max_rooms").html(ui.values[1]);
+		},
+		change: function(event, ui) {
+			$("#min_rooms").html(ui.values[0]);
+			$("#max_rooms").html(ui.values[1]);
+			search();
+		}
+	});
+	$("#min_rooms").html($("#rooms_slider").slider("values", 0));
+	$("#max_rooms").html($("#rooms_slider").slider("values", 1));
+};
+
+var populateTags = function(){
+	// do the search
+	$.post("http://54.228.248.212/imapper/get_tags.php", {}, function(data) {
+		var tagContent = '';
+		for(var tag in data){
+			tagContent += '<input type="checkbox" class="tag_class" value="'+ data[tag] + '"> ' + data[tag] + '<br>';
+		}
+		$('#extras').html(tagContent);
+		$(".tag_class").click(function(){
+			search();
+		});
+	}, "json");
+};
 
 $(document).ready(function() {
 	window.lat = 50;
@@ -94,4 +186,7 @@ $(document).ready(function() {
 	window.search_map_places_new = [];
 	window.infowindow = new google.maps.InfoWindow();
 	initializeSearchMap();
+	populateTags();
+	enableSliders();
 });
+

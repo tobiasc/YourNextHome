@@ -16,14 +16,18 @@
 <div id="search_map_canvas" style="width:100%;height:100%;"></div>
 
 <div id="search_box">
-	Price:<br>
-	<input type="text" id="min_price" size="5"> - <input type="text" id="max_price" size="5"><br><br>
+	Price: €<span id="min_price">0</span> - €<span id="max_price">4000</span><br>
+	<div class="slider" id="price_slider"></div>	
 
-	Rooms:<br>
-	<input type="text" id="min_rooms" size="5"> - <input type="text" id="max_rooms" size="5"><br><br>
+	Rooms: <span id="min_rooms">0</span> - <span id="max_rooms">10</span><br>
+	<div class="slider" id="rooms_slider"></div>	
 
-	Size:<br>
-	<input type="text" id="min_size" size="5"> - <input type="text" id="max_size" size="5">
+	Size: <span id="min_size">0</span>m2 - <span id="max_size">500</span>m2<br>
+	<div class="slider" id="size_slider"></div>	
+
+	Extras:<br>
+	<div id="extras"></div>
+
 </div>
 
 </body>

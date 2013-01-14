@@ -1,20 +1,26 @@
 <?php
-$config['db'] = null;
+$GLOBALS['m'] = null;
+$GLOBALS['db'] = null;
 
 // gets a collection from the DB
-function get_db_collection($collection){
-	if($config['db'] === null){
-		$m = new Mongo();
-		$config['db'] = $m->imapper;
+function get_db_collection($collection, $db = 'imapper'){
+	if($GLOBALS['m'] === null){
+		$GLOBALS['m'] = new Mongo();
 	}
-	return $config['db']->{$collection};
+	if($GLOBALS['db'] === null){
+		$GLOBALS['db'] = $GLOBALS['m']->{$db};
+	}
+	return $GLOBALS['db']->{$collection};
 }
 
 // closes a DB connection
 function close_db(){
-	if($config['db'] !== null){
-		close($config['db']);
-		$config['db'] = null;
+	if($GLOBALS['m'] !== null){
+		$GLOBALS['m']->close();
+		$GLOBALS['m'] = null;
+	}
+	if($GLOBALS['db'] !== null){
+		$GLOBALS['db'] = null;
 	}
 }
 ?>

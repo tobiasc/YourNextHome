@@ -1,13 +1,27 @@
 <?php
 // determines how a website should be fetched
 function fetch_im24(){
-	insert_url_im24('im24.txt');
+	$min = 4;	
+	$max = 425;
+	for($i = $min; $i <= $max; $i++){
+		echo 'Fetching page: '.$i."\n";
+		$tmp = '';
+		if($i > 1){
+			$tmp = '/P-'.$i;
+		}
+		insert_url_im24('http://www.immobilienscout24.de/Suche/S-T'.$tmp.'/Wohnung-Miete/Berlin/Berlin');
+		sleep(3);
+	}
+
+	// insert_url_im24('im24.txt'); // cached version
+	// http://www.immobilienscout24.de/Suche/S-T/Wohnung-Miete/Berlin/Berlin // search result - page 1
+	// http://www.immobilienscout24.de/Suche/S-T/P-3/Wohnung-Miete/Berlin/Berlin // search result - page 3
 }
 
 // fetch a specific URL & inserts it into the DB
 function insert_url_im24($filename){
 	$place_separator = '<li class="is24-res-entry';
-	$file = file_get_contents($filename);
+	$file = utf8_encode(file_get_contents($filename));
 
 	while(strpos($file, $place_separator) > 0){
 		// set $file to start from next place
@@ -20,7 +34,11 @@ function insert_url_im24($filename){
 		$data = read_place_im24($place);
 
 		// insert place
-		print_r($data);
+		$key = array('vendor_id' => $data['vendor_id'], 'vendor_name' => $data['vendor_name']);
+		$collection = get_db_collection('places');
+		$collection->update($key, $data, array('upsert' => true));
+
+		echo "Inserted place: ".$data['title']."\n";
 
 		// make sure $file doesn't start with the same place next time
 		$file = substr($file, strlen($place_separator));
@@ -57,7 +75,7 @@ function read_place_im24($place){
 	$place = substr($place, strpos($place, '<dt class="'));
 	$type = strip_tags(substr($place, 0, strpos($place, '</dt>') + strlen('</dt>')));
 	$place = substr($place, strpos($place, '<dd class="'));
-	$data['price'] = ($type === 'Kaltmiete: ')?(int)strip_tags(substr($place, 0, strpos($place, '</dd>') + strlen('</dd>'))):'';
+	$data['price'] = ($type === 'Kaltmiete: ')?(int)str_replace('.','',strip_tags(substr($place, 0, strpos($place, '</dd>') + strlen('</dd>')))):'';
 
 	// get size
 	$place = substr($place, strpos($place, '<dt class="'));
