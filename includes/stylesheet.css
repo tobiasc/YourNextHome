@@ -1,0 +1,11 @@
+#search_box{position:absolute; bottom:35px; left:50px; width:410px; background:white; border: #000 1px solid; padding:10px;}
+
+html{height:100%;}
+body{margin: 0 auto;font:Verdana,Arial,Helvetica,sans-serif;height:100%;}
+img{-ms-interpolation-mode:bicubic;border:none;}
+
+a:link img,a:visited img,a:active img,a:hover img{border:none;}
+a,span.link{font:sans-serif;text-decoration:none;color:#597EAA;cursor:pointer;}
+h2.link,img.link{text-decoration:none;color:black;cursor:pointer;}
+a:hover,span.link:hover,h2.link:hover{text-decoration:underline;}
+
