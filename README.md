@@ -1,4 +1,4 @@
 imapper
 =======
 
-A padmapper clone for Germany
+A padmapper clone
