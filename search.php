@@ -47,14 +47,20 @@ foreach($tags as $key => $tag){
 
 // return keys
 $return = array('lat' => 1, 'lng' => 1, 'vendor_name' => 1, 'vendor_link' => 1, 'url' => 1, 'title' => 1, 
-	'img' => 1, 'price' => 1, 'size' => 1, 'rooms' => 1, 'tags' => 1, 'address' => 1);
+	'img' => 1, 'price' => 1, 'size' => 1, 'rooms' => 1, 'tags' => 1, 'address' => 1, 'area.accuracy' => 1);
 
 // fire query
 $collection = get_db_collection('places');
 $cursor = $collection->find($obj, $return);
 foreach($cursor as $place){
+	// add jitter if the address isn't accurate, to avoid places on top of each other
+	if((int)$place['area']['accuracy'] !== 1){
+		$place['lat'] = (round($place['lat'] * 10000,0) + rand(0,9))/10000;
+		$place['lng'] = (round($place['lng'] * 10000,0) + rand(0,9))/10000;
+	}
 	array_push($places, array(
 		'id' => $place['_id']->{'$id'}, 
+		'address_accuracy' => $place['area']['accuracy'], 
 		'title' => $place['title'], 
 		'lat' => $place['lat'], 
 		'lng' => $place['lng'],

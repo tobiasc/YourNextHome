@@ -1,4 +1,6 @@
-#search_box{position:absolute; bottom:35px; left:75px; width:410px; background:white; border: #000 1px solid; padding:10px;}
+#search_box{width:18%; background:white; padding:10px; float:left;}
+#search_map_canvas{width:80%; height:100%; float:left;}
+img.legend {width:16px; height:18px;}
 
 html{height:100%;}
 body{margin: 0 auto;font:Verdana,Arial,Helvetica,sans-serif;height:100%;}

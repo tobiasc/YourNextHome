@@ -40,12 +40,21 @@ var search = function(){
 			for(var place in data["places"]){
 				var place_id = data["places"][place].id;
 				if(typeof window.search_map_places[place_id] === 'undefined'){
+					var icon = 'includes/accuracy_3.png';
+					if(data['places'][place].address_accuracy === 1){
+						icon = 'includes/accuracy_1.png';
+					} else if(data['places'][place].address_accuracy === 2){
+						icon = 'includes/accuracy_2.png';
+					} else {
+						icon = 'includes/accuracy_3.png';
+					}
 					window.search_map_places_new[place_id] = new google.maps.Marker({
-						position: new google.maps.LatLng(data["places"][place].lat, data["places"][place].lng),
-						map: window.search_map,
-						title: data["places"][place].title,
-						custom_data: data["places"][place],
-						custom_id: place_id
+						'position': new google.maps.LatLng(data["places"][place].lat, data["places"][place].lng),
+						'map': window.search_map,
+						'title': data["places"][place].title,
+						'custom_data': data["places"][place],
+						'icon': icon,
+						'custom_id': place_id
 					});
 					google.maps.event.addListener(window.search_map_places_new[place_id], "click", function() {
 						var content = '<img src="' + this.custom_data.img + '"><br><br>' + 
@@ -97,9 +106,12 @@ var initializeSearchMap = function() {
 	window.search_map = new google.maps.Map(document.getElementById("search_map_canvas"), mapOptions);
 	centerMap(window.search_map);
 	google.maps.event.addListener(window.search_map, "dragend", function() {
-		window.map_changed = true;
 		search();
 	});
+	google.maps.event.addListener(window.search_map, "zoom_changed", function() {
+		search();
+	});
+	search();
 };
 
 // enable sliders on page load
@@ -180,8 +192,8 @@ var populateTags = function(){
 };
 
 $(document).ready(function() {
-	window.lat = 50;
-	window.lng = 0;
+	window.lat = 52.517474;
+	window.lng = 13.405526;
 	window.search_map_places = [];
 	window.search_map_places_new = [];
 	window.infowindow = new google.maps.InfoWindow();

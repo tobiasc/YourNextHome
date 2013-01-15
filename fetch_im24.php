@@ -111,4 +111,45 @@ function read_place_im24($place){
 
 	return $data;
 }
+
+// determines an inaccurate address
+//
+// Test data:
+// Mitte (Mitte), Berlin
+// Otto-Suhr-Allee, Charlottenburg (Charlottenburg), Berlin
+// Cantianstr. 15, Prenzlauer Berg (Prenzlauer Berg), Berlin
+// Graefestraße 2, Kreuzberg (Kreuzberg), Berlin
+function determine_address_accuracy_im24($address){
+	$data = array();
+	$data['accuracy'] = 0;
+
+	$matches = array();
+
+	// full address
+	if(preg_match('/^([^0-9\,]+) ([a-zA-Z0-9 \-\/\_]+), ([^0-9\,\(\)]+) \([^0-9\,\(\)]+\), ([^0-9\,]+)$/', $address, $matches)){
+		$data['accuracy'] = 1;
+		$data['street'] = $matches[1];
+		$data['street_num'] = $matches[2];
+		$data['minor_area'] = $matches[3];
+		$data['major_area'] = $matches[4];
+
+	// missing street number
+	} else if(preg_match('/^([^0-9\,]+), ([^0-9\,\(\)]+) \([^0-9\,\(\)]+\), ([^0-9\,]+)$/', $address, $matches)){
+		$data['accuracy'] = 2;
+		$data['street'] = '';
+		$data['street_num'] = $matches[1];
+		$data['minor_area'] = $matches[2];
+		$data['major_area'] = $matches[3];
+
+	// missing street & street number
+	} else if(preg_match('/^([^0-9\,\(\)]+) \([^0-9\,\(\)]+\), ([^0-9\,]+)$/', $address, $matches)){
+		$data['accuracy'] = 3;
+		$data['street'] = '';
+		$data['street_num'] = '';
+		$data['minor_area'] = $matches[1];
+		$data['major_area'] = $matches[2];
+	} 
+	
+	return $data;
+}
 ?>
