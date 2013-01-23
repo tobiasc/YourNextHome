@@ -1,4 +1,2 @@
-imapper
+im24-mapper
 =======
-
-A padmapper clone
