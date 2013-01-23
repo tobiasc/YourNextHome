@@ -1,8 +1,8 @@
 <?php
 // determines how a website should be fetched
 function fetch_im24(){
-	$min = 4;	
-	$max = 425;
+	$min = 1;	
+	$max = 1;
 	for($i = $min; $i <= $max; $i++){
 		echo 'Fetching page: '.$i."\n";
 		$tmp = '';

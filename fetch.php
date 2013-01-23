@@ -2,7 +2,7 @@
 require_once('functions.php');
 
 // go through all websites
-$websites = array('im24', 'wg_gesucht');
+$websites = array('im24');
 foreach($websites as $key => $val){
 	require_once('fetch_'.$val.'.php');
 	eval('fetch_'.$val.'();');
