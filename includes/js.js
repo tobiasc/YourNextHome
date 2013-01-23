@@ -22,7 +22,7 @@ var search = function(){
 	});
 	
 	// do the search
-	$.post("http://54.228.248.212/imapper/search.php", {
+	$.post("http://54.228.248.212/im24-mapper/search.php", {
 			"max_lat": max_lat, 
 			"min_lat": min_lat, 
 			"max_lng": max_lng, 

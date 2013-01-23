@@ -2,7 +2,7 @@
 // determines how a website should be fetched
 function fetch_im24(){
 	$min = 1;	
-	$max = 1;
+	$max = 420;
 	for($i = $min; $i <= $max; $i++){
 		echo 'Fetching page: '.$i."\n";
 		$tmp = '';
@@ -103,6 +103,9 @@ function read_place_im24($place){
 	$place = substr($place, strpos($place, '<p class="is24-address">'));
 	$address = substr($place, 0, strpos($place, '</p>'));
 	$data['address'] = trim(strip_tags(substr($address, strrpos($address, '</span>'))));
+
+	// insert address accuracy
+	$data['area'] = determine_address_accuracy_im24($data['address']);
 
 	// get lat/lng
 	$location = getLatLng($data['address']);
