@@ -4,8 +4,8 @@ var search = function(){
 	if(typeof bounds !== 'undefined'){
 		max_lat = bounds["Z"]["d"];
 		min_lat = bounds["Z"]["b"];
-		max_lng = bounds["ca"]["d"];
-		min_lng = bounds["ca"]["b"];
+		max_lng = bounds["fa"]["d"];
+		min_lng = bounds["fa"]["b"];
 	} else {
 		max_lat = 90;
 		min_lat = -90;
