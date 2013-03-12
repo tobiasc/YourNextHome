@@ -48,8 +48,8 @@ foreach($tags as $key => $tag){
 // handle interests
 // first check if any interests are selected, then pull out areas and match areas (min 1 area returned)
 $_REQUEST['interests'] = (isset($_REQUEST['interests']))?$_REQUEST['interests']:'';
-$interests = explode(',', $_REQUEST['interests']);
-if(sizeof($interests) > 0){
+if($_REQUEST['interests'] !== ''){
+	$interests = explode(',', $_REQUEST['interests']);
 	$intersect_areas = array();
 	$areas = array();
 	$collection = get_db_collection('areas');
