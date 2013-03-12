@@ -1,5 +1,5 @@
-im24-mapper
+YourNextHome
 =======
-A padmapper-like view of ImmoScout24 (http://www.immobilienscout24.de/)
+Anders & Tobias trying to disrupt the immobilien market in Berlin
 
-http://54.228.248.212/im24-mapper/
+http://yournexthome.dk
