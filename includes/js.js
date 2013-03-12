@@ -2,10 +2,10 @@ var search = function(){
 	// if the map bounds cannot be found use default values (the entire Earth)
 	var bounds = window.search_map.getBounds();
 	if(typeof bounds !== 'undefined'){
-		max_lat = bounds["Z"]["d"];
-		min_lat = bounds["Z"]["b"];
-		max_lng = bounds["fa"]["d"];
-		min_lng = bounds["fa"]["b"];
+		max_lat = bounds["fa"]["d"];
+		min_lat = bounds["fa"]["b"];
+		max_lng = bounds["ka"]["d"];
+		min_lng = bounds["ka"]["b"];
 	} else {
 		max_lat = 90;
 		min_lat = -90;
@@ -20,9 +20,17 @@ var search = function(){
 			tags += $(this).val() + ',';
 		}
 	});
+
+	// create the tags query parameter
+	var interests = '';
+	$('.interest_class').each(function(index) {
+		if($(this).attr('checked')) {
+			interests += $(this).val() + ',';
+		}
+	});
 	
 	// do the search
-	$.post("http://54.228.228.83/search.php", {
+	$.post("http://yournexthome.dk/search.php", {
 			"max_lat": max_lat, 
 			"min_lat": min_lat, 
 			"max_lng": max_lng, 
@@ -33,7 +41,8 @@ var search = function(){
 			"min_price": $("#min_price").html(),
 			"max_rooms": $("#max_rooms").html(),
 			"min_rooms": $("#min_rooms").html(),
-			"tags": tags
+			"tags": tags,
+			"interests": interests
 		}, function(data) {
 
 			// only insert markers that are not already on the map
@@ -177,9 +186,23 @@ var enableSliders = function() {
 	$("#max_rooms").html($("#rooms_slider").slider("values", 1));
 };
 
+var populateInterests = function(){
+	// do the search
+	$.post("http://yournexthome.dk/get_interests.php", {}, function(data) {
+		var tagContent = '';
+		for(var interest in data){
+			tagContent += '<input type="checkbox" class="interest_class" value="'+ data[interest]['id'] + '"> ' + data[interest]['name'] + '<br>';
+		}
+		$('#interests').html(tagContent);
+		$(".interest_class").click(function(){
+			search();
+		});
+	}, "json");
+};
+
 var populateTags = function(){
 	// do the search
-	$.post("http://54.228.228.83/get_tags.php", {}, function(data) {
+	$.post("http://yournexthome.dk/get_tags.php", {}, function(data) {
 		var tagContent = '';
 		for(var tag in data){
 			tagContent += '<input type="checkbox" class="tag_class" value="'+ data[tag] + '"> ' + data[tag] + '<br>';
@@ -192,12 +215,15 @@ var populateTags = function(){
 };
 
 $(document).ready(function() {
+	// Berlin centrum sat som default
 	window.lat = 52.517474;
 	window.lng = 13.405526;
+
 	window.search_map_places = [];
 	window.search_map_places_new = [];
 	window.infowindow = new google.maps.InfoWindow();
 	initializeSearchMap();
+	populateInterests();
 	populateTags();
 	enableSliders();
 });

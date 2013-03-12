@@ -3,7 +3,7 @@ $GLOBALS['m'] = null;
 $GLOBALS['db'] = null;
 
 // gets a collection from the DB
-function get_db_collection($collection, $db = 'imapper'){
+function get_db_collection($collection, $db = 'yournexthome'){
 	if($GLOBALS['m'] === null){
 		$GLOBALS['m'] = new Mongo();
 	}

@@ -108,7 +108,8 @@ function read_place_im24($place){
 	$data['area'] = determine_address_accuracy_im24($data['address']);
 
 	// get lat/lng
-	$location = getLatLng($data['address']);
+	$address = $data['area']['street'].' '.$data['area']['street_num'].', '.$data['area']['minor_area'].', '.$data['area']['city'];
+	$location = getLatLng($address);
 	$data['lat'] = $location['lat'];
 	$data['lng'] = $location['lng'];
 
@@ -129,28 +130,31 @@ function determine_address_accuracy_im24($address){
 	$matches = array();
 
 	// full address
-	if(preg_match('/^([^0-9\,]+) ([a-zA-Z0-9 \-\/\_]+), ([^0-9\,\(\)]+) \([^0-9\,\(\)]+\), ([^0-9\,]+)$/', $address, $matches)){
+	if(preg_match('/^([^0-9\,]+) ([a-zA-Z0-9 \-\/\_]+), ([^0-9\,\(\)]+) \(([^0-9\,\(\)]+)\), ([^0-9\,]+)$/', $address, $matches)){
 		$data['accuracy'] = 1;
 		$data['street'] = $matches[1];
 		$data['street_num'] = $matches[2];
 		$data['minor_area'] = $matches[3];
 		$data['major_area'] = $matches[4];
+		$data['city'] = $matches[5];
 
 	// missing street number
-	} else if(preg_match('/^([^0-9\,]+), ([^0-9\,\(\)]+) \([^0-9\,\(\)]+\), ([^0-9\,]+)$/', $address, $matches)){
+	} else if(preg_match('/^([^0-9\,]+), ([^0-9\,\(\)]+) \(([^0-9\,\(\)]+)\), ([^0-9\,]+)$/', $address, $matches)){
 		$data['accuracy'] = 2;
 		$data['street'] = '';
 		$data['street_num'] = $matches[1];
 		$data['minor_area'] = $matches[2];
 		$data['major_area'] = $matches[3];
+		$data['city'] = $matches[4];
 
 	// missing street & street number
-	} else if(preg_match('/^([^0-9\,\(\)]+) \([^0-9\,\(\)]+\), ([^0-9\,]+)$/', $address, $matches)){
+	} else if(preg_match('/^([^0-9\,\(\)]+) \(([^0-9\,\(\)]+)\), ([^0-9\,]+)$/', $address, $matches)){
 		$data['accuracy'] = 3;
 		$data['street'] = '';
 		$data['street_num'] = '';
 		$data['minor_area'] = $matches[1];
 		$data['major_area'] = $matches[2];
+		$data['city'] = $matches[3];
 	} 
 	
 	return $data;

@@ -62,6 +62,7 @@ function getLatLng($address){
 			$insert = array('lat' => $data['lat'], 'lng' => $data['lng'], 'address' => $address);
 			$collection->update($obj, $insert, array('upsert' => true));
 		}
+		sleep(1);
 	}
 
 	return $data;

@@ -45,9 +45,55 @@ foreach($tags as $key => $tag){
 	}
 }
 
+// handle interests
+// first check if any interests are selected, then pull out areas and match areas (min 1 area returned)
+$_REQUEST['interests'] = (isset($_REQUEST['interests']))?$_REQUEST['interests']:'';
+$interests = explode(',', $_REQUEST['interests']);
+if(sizeof($interests) > 0){
+	$intersect_areas = array();
+	$areas = array();
+	$collection = get_db_collection('areas');
+	$return = array('name' => 1, 'interests.id' => 1, '_id' => 0);
+	$cursor = $collection->find(array(), $return);
+	foreach($cursor as $area){
+		$areas[$area['name']] = array();
+		foreach($area['interests'] as $i => $int){
+			array_push($areas[$area['name']], $int['id']);
+		}
+		$intersect_areas[$area['name']] = sizeof(array_intersect($interests, $areas[$area['name']]));
+	}
+	arsort($intersect_areas);
+	$intersect_areas_new = array();
+	$old_intersects = null;
+	foreach($intersect_areas as $name => $intersects){
+		if($old_intersects === null){
+			$old_intersects = $intersects;
+		}
+		if($old_intersects !== $intersects){
+			break;
+		} else {
+			array_push($intersect_areas_new, $name);
+		}
+	}
+	array_push($obj['$and'], array('area.major_area' => array('$in' => $intersect_areas_new)));
+}
+
 // return keys
-$return = array('lat' => 1, 'lng' => 1, 'vendor_name' => 1, 'vendor_link' => 1, 'url' => 1, 'title' => 1, 
-	'img' => 1, 'price' => 1, 'size' => 1, 'rooms' => 1, 'tags' => 1, 'address' => 1, 'area.accuracy' => 1);
+$return = array(
+	'lat' => 1, 
+	'lng' => 1, 
+	'vendor_name' => 1, 
+	'vendor_link' => 1, 
+	'url' => 1, 
+	'title' => 1, 
+	'img' => 1, 
+	'price' => 1, 
+	'size' => 1, 
+	'rooms' => 1, 
+	'tags' => 1, 
+	'address' => 1, 
+	'area.accuracy' => 1
+);
 
 // fire query
 $collection = get_db_collection('places');
@@ -68,6 +114,7 @@ foreach($cursor as $place){
 		'img' => $place['img'], 
 		'price' => $place['price'], 
 		'url' => $place['url'], 
+		'tags' => $place['tags'], 
 		'size' => $place['size']));
 
 	// Google Maps doesn't like to many markers...	
