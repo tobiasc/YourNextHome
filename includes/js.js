@@ -22,7 +22,7 @@ var search = function(){
 	});
 	
 	// do the search
-	$.post("http://54.228.248.212/im24-mapper/search.php", {
+	$.post("http://54.228.228.83/search.php", {
 			"max_lat": max_lat, 
 			"min_lat": min_lat, 
 			"max_lng": max_lng, 
@@ -179,7 +179,7 @@ var enableSliders = function() {
 
 var populateTags = function(){
 	// do the search
-	$.post("http://54.228.248.212/im24-mapper/get_tags.php", {}, function(data) {
+	$.post("http://54.228.228.83/get_tags.php", {}, function(data) {
 		var tagContent = '';
 		for(var tag in data){
 			tagContent += '<input type="checkbox" class="tag_class" value="'+ data[tag] + '"> ' + data[tag] + '<br>';
