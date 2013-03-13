@@ -72,8 +72,14 @@ var search = function(){
 							'Size: ' + this.custom_data.size + 'm2<br>' +
 							'Rooms: ' + this.custom_data.rooms + '<br><br>' +
 							'<a href="' + this.custom_data.url + '" target="_blank">ImmoScout24</a>';
+						if(typeof fb_id != 'undefined'){
+							content += '<div style="float:right;"><button type="button" place_id="' + this.custom_data.id + '" fb_id="' + fb_id + '" class="btn btn-success add_to_shortlist">Add To Shortlist</button></div>';
+						}
 						window.infowindow.setContent(content);
 						window.infowindow.open(window.search_map, this);
+
+						// set shortlist action listener
+						addShortlistButtonClick();
 					});
 				} else {
 					window.search_map_places_new[place_id] = window.search_map_places[place_id];
@@ -214,6 +220,50 @@ var populateTags = function(){
 	}, "json");
 };
 
+var populateShortlist = function(){
+	$('#shortlist').html('');
+	if(typeof fb_id != 'undefined'){
+		$.post("http://yournexthome.dk/get_shortlist.php", {
+			'fb_id': fb_id
+			}, function(data) {
+				var shortlistContent = '<ul>';
+				for(var i in data){
+					shortlistContent += '<li><a href="' + data[i]['url'] + '" target="_blank">' + data[i]['title'] + '</a>' + 
+						' <button type="button" place_id="' + data[i]['id'] + '" fb_id="' + fb_id + '" class="btn-mini btn btn-danger remove_from_shortlist">X</button></li>';
+				}
+				shortlistContent += '</ul>';
+				$('#shortlist').html(shortlistContent);
+				removeShortlistButtonClick();
+			}, "json"
+		);
+	}
+};
+
+var addShortlistButtonClick = function(){
+	$(".add_to_shortlist").click(function(){
+		$(this).attr('disabled', 'disabled');
+		$.post("http://yournexthome.dk/update_shortlist.php", {
+			'fb_id': $(this).attr('fb_id'),
+			'place_id': $(this).attr('place_id'),
+			'action': 'insert'
+		}, function(){
+			populateShortlist();
+		});
+	});
+};
+
+var removeShortlistButtonClick = function(){
+	$(".remove_from_shortlist").click(function(){
+		$.post("http://yournexthome.dk/update_shortlist.php", {
+			'fb_id': $(this).attr('fb_id'),
+			'place_id': $(this).attr('place_id'),
+			'action': 'remove'
+		}, function(){
+			populateShortlist();
+		});
+	});
+};
+
 $(document).ready(function() {
 	// Berlin centrum sat som default
 	window.lat = 52.517474;
@@ -226,5 +276,14 @@ $(document).ready(function() {
 	populateInterests();
 	populateTags();
 	enableSliders();
+	populateShortlist();
+
+	$(function() {
+		$("#accordion").accordion({
+			collapsible: true,
+			heightStyle: "content",
+			active: false
+		});
+	});
 });
 

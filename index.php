@@ -131,11 +131,13 @@ if(!isset($_SESSION['fb_id']) || !isset($_SESSION['name'])){
 	Size: <span id="min_size">0</span>m2 - <span id="max_size">500</span>m2<br>
 	<div class="slider" id="size_slider"></div>	
 
-	Interests:<br>
-	<div id="interests"></div><br>
+	<div id="accordion">
+		<h3>Interests</h3>
+		<div id="interests"></div>
 
-	Extras:<br>
-	<div id="extras"></div>
+		<h3>Extras</h3>
+		<div id="extras"></div>
+	</div>
 
 	<br><br><br>
 	Legend:<br>
@@ -151,7 +153,7 @@ if(!isset($_SESSION['fb_id']) || !isset($_SESSION['name'])){
 		<?php
 	} else {
 		?>
-		<a data-target="#modal" href="get_user.php?user_id=<?php echo $_SESSION['fb_id']; ?>" data-toggle="modal"><?php echo $_SESSION['name']; ?></a> - <a href="make_logout.php">Log Out</a>
+		<a data-target="#modal" href="get_user.php?fb_id=<?php echo $_SESSION['fb_id']; ?>" data-toggle="modal"><?php echo $_SESSION['name']; ?></a> - <a href="make_logout.php">Log Out</a>
 		<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -165,6 +167,14 @@ if(!isset($_SESSION['fb_id']) || !isset($_SESSION['name'])){
 				<button class="btn btn-primary">Save changes</button>
 			</div>
 		</div>
+
+		<br><br>
+		<strong>Shortlist:</strong>
+		<div id="shortlist"></div>
+
+		<script>
+			var fb_id = <?php echo $_SESSION['fb_id']; ?>;
+		</script>
 		<?php
 	}
 	?>

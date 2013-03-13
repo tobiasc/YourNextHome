@@ -4,13 +4,13 @@ require_once('functions.php');
 // return object
 $data = array();
 
-if(isset($_REQUEST['user_id']) && $_REQUEST['user_id'] !== ''){
+if(isset($_REQUEST['fb_id']) && $_REQUEST['fb_id'] !== ''){
 
 	// create default query
-	$obj = array('fb_id' => $_REQUEST['user_id']);
+	$obj = array('fb_id' => $_REQUEST['fb_id']);
 
 	// return keys
-	$return = array('likes' => 1, 'name' => 1, 'link' => 1, 'image' => 1, '_id' => 0);
+	$return = array('checkins' => 1, 'likes' => 1, 'name' => 1, 'link' => 1, 'image' => 1, '_id' => 0);
 
 	// fire query
 	$collection = get_db_collection('users');
@@ -24,6 +24,10 @@ if(isset($_REQUEST['user_id']) && $_REQUEST['user_id'] !== ''){
 		if($key !== 'raw_likes'){
 			$s .= '<li>'.$key.': '.$user['likes'][$key].'</li>';
 		}
+	}
+	$s .= '</ul><br><strong>#Berlin Checkins:</strong><ul>';
+	foreach($user['checkins'] as $key => $checkin){
+		$s .= '<li>'.$checkin['name'].': '.$checkin['count'].'</li>';
 	}
 	$s .= '</ul><br><a href="'.$user['link'].'" target="_blank">Facebook</a>';
 } else {
