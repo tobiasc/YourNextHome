@@ -24,9 +24,13 @@ if(isset($_SESSION['admin']) && $_SESSION['admin'] == 3){
 	foreach($cursor as $item){
 		// find places
 		$places_key = array('_id' => new MongoId($item['place_id']));
-		$return = array('url' => 1, 'title' => 1, '_id' => 0);
+		$return = array('url' => 1, 'title' => 1, 'area' => 1, '_id' => 0);
 		$place = $places->findOne($places_key, $return);
 		$place['id'] = $item['place_id'];
+
+		if(!isset($places_array[$place['id']])){
+			$places_array[$place['id']] = $place;
+		} 
 
 		// find users
 		$users_key = array('fb_id' => $item['fb_id']);
@@ -34,12 +38,10 @@ if(isset($_SESSION['admin']) && $_SESSION['admin'] == 3){
 		$user = $users->findOne($users_key, $return);
 		$users_array[$item['fb_id']] = $user['name'];
 		
-		if(!isset($place['users'])){
-			$place['users'] = array();
+		if(!isset($places_array[$place['id']]['users'])){
+			$places_array[$place['id']]['users'] = array();
 		}
-		array_push($place['users'], array('fb_id' => $item['fb_id'], 'name' => $user['name']));
-
-		array_push($places_array, $place);
+		array_push($places_array[$place['id']]['users'], array('fb_id' => $item['fb_id'], 'name' => $user['name']));
 	}
 	// close any open db's
 	close_db();
@@ -50,7 +52,7 @@ if(isset($_SESSION['admin']) && $_SESSION['admin'] == 3){
 		<br>
 
 		<table class="table table-bordered table-striped">
-		<tr><th>Place</th><th>Interested Users</th></tr>
+		<tr><th>Place</th><th>Address</th><th>Interested Users</th></tr>
 
 		<?php
 		foreach($places_array as $i => $place){
@@ -58,7 +60,9 @@ if(isset($_SESSION['admin']) && $_SESSION['admin'] == 3){
 			foreach($place['users'] as $j => $user){
 				$li .= '<a data-target="#modal_'.$user['fb_id'].'" href="/get_user.php?fb_id='.$user['fb_id'].'" data-toggle="modal">'.$user['name'].'</a><br>';
 			}
-			echo '<tr><td><a href="'.$place['url'].'" target="_blank">'.$place['title'].'</a></td><td>'.$li.'</td></tr>';
+			echo '<tr><td><a href="'.$place['url'].'" target="_blank">'.$place['title'].'</a></td>
+				<td><a href="https://maps.google.com/?q='.$place['area']['street'].' '.$place['area']['street_num'].', '.$place['area']['minor_area'].', '.$place['area']['city'].'" target="_blank">'.$place['area']['street'].' '.$place['area']['street_num'].', '.$place['area']['minor_area'].', '.$place['area']['city'].'</a></td>
+				<td>'.$li.'</td></tr>';
 		}
 		?>
 
