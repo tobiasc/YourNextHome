@@ -55,10 +55,10 @@ function getLatLng($address){
 		$data = $loc;
 
 	} else {
-		$location = json_decode(file_get_contents('http://maps.google.com/maps/geo?q='.urlencode($address).'&output=json&key=ABQIAAAAYNrxZqPTuL_GZv4fRpfHnBTzqM0MAg6XW9uzXQA5aaO_HBeqyxTQq-yWHLLsTFnJv4lK-4n91zKGSA'));
-		if(isset($location->Placemark[0]->Point)){
-			$first_location = $location->Placemark[0]->Point;
-			$data = array('lat' => $first_location->coordinates[1], 'lng' => $first_location->coordinates[0]);
+		$location = json_decode(file_get_contents('http://maps.googleapis.com/maps/api/geocode/json?address='.urlencode($address).'&sensor=false'));
+		if(isset($location->results[0]->geometry)){
+			$first_location = $location->results[0]->geometry;
+			$data = array('lat' => $first_location->location->lat, 'lng' => $first_location->location->lng);
 			$insert = array('lat' => $data['lat'], 'lng' => $data['lng'], 'address' => $address);
 			$collection->update($obj, $insert, array('upsert' => true));
 		}

@@ -110,5 +110,45 @@ foreach($areas_array as $id => $area){
 	$areas->insert($obj);	
 }
 
+$places = get_db_collection('places');
+$key = array('lat' => '');
+$cursor = $places->find($key);
+foreach($cursor as $place){
+	$address = getLatLng($place['area']['street'].' '.$place['area']['street_num'].', '.$place['area']['minor_area'].', '.$place['area']['city']);
+
+	$place['lat'] = $address['lat'];
+	$place['lng'] = $address['lng'];
+	$key_place = array('_id' => $place['_id']);
+	$places->update($key_place, $place, array('upsert' => true));
+}
+
+// get lat/lng from address, this uses Google Maps API
+function getLatLng($address){
+	$collection = get_db_collection('addresses');
+
+	// set default object
+	$data = array('lat' => '', 'lng' => '');
+
+	// get cached location
+	$obj = array('address' => $address);
+	$return = array('lat' => 1, 'lng' => 1, '_id' => 0);
+	$loc = $collection->findOne($obj, $return);
+	if($loc !== null){
+		$data = $loc;
+
+	} else {
+		$location = json_decode(file_get_contents('http://maps.googleapis.com/maps/api/geocode/json?address='.urlencode($address).'&sensor=false'));
+		if(isset($location->results[0]->geometry)){
+			$first_location = $location->results[0]->geometry;
+			$data = array('lat' => $first_location->location->lat, 'lng' => $first_location->location->lng);
+			$insert = array('lat' => $data['lat'], 'lng' => $data['lng'], 'address' => $address);
+			$collection->update($obj, $insert, array('upsert' => true));
+		}
+		sleep(1);
+	}
+
+	return $data;
+}
+
 close_db();
 ?>
