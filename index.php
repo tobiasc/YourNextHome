@@ -114,6 +114,7 @@ if(!isset($_SESSION['fb_id']) || !isset($_SESSION['name'])){
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
 <script src="includes/bootstrap/bootstrap.min.js"></script>
 <script src="includes/js.js"></script>
+<script src="includes/yournexthome.js"></script>
 
 </head>
 <body>

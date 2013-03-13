@@ -24,6 +24,8 @@ function get_head($title, $includes = ''){
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
 		<script src="/includes/bootstrap/bootstrap.min.js"></script>
+		<script src="/includes/js.js"></script>
+		<script src="/includes/admin.js"></script>
 
 		'.$includes.'
 
