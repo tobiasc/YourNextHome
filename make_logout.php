@@ -1,4 +1,6 @@
 <?php 
+require_once('includes/config.php');
+
 session_start();
 
 setcookie('id', '', time()-3600);
@@ -9,6 +11,6 @@ session_unset();
 session_destroy();
 
 $_SESSION[logout] = true;
-header('Location:http://yournexthome.dk/');
+header('Location:'.$_CONFIG['url']);
 exit;
 ?>

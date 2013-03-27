@@ -23,4 +23,16 @@ function close_db(){
 		$GLOBALS['db'] = null;
 	}
 }
+
+// takes two arrays and makes sure that the child array has (at least) the keys from the parent array
+function fill_array($parent, $child){
+
+	foreach($parent as $key => $value){
+		if($value && !isset($child[$key])){
+			$child[$key] = '';
+		}
+	}
+
+	return $child;
+}
 ?>

@@ -2,10 +2,10 @@ var search = function(){
 	// if the map bounds cannot be found use default values (the entire Earth)
 	var bounds = window.search_map.getBounds();
 	if(typeof bounds !== 'undefined'){
-		max_lat = bounds["fa"]["d"];
-		min_lat = bounds["fa"]["b"];
-		max_lng = bounds["ka"]["d"];
-		min_lng = bounds["ka"]["b"];
+		max_lat = bounds["Z"]["d"];
+		min_lat = bounds["Z"]["b"];
+		max_lng = bounds["fa"]["d"];
+		min_lng = bounds["fa"]["b"];
 	} else {
 		max_lat = 90;
 		min_lat = -90;
@@ -30,7 +30,7 @@ var search = function(){
 	});
 	
 	// do the search
-	$.post("http://yournexthome.dk/search.php", {
+	$.post(yournexthome_server + "place_get.php", {
 			"max_lat": max_lat, 
 			"min_lat": min_lat, 
 			"max_lng": max_lng, 
@@ -72,8 +72,8 @@ var search = function(){
 							'Size: ' + this.custom_data.size + 'm2<br>' +
 							'Rooms: ' + this.custom_data.rooms + '<br><br>' +
 							'<a href="' + this.custom_data.url + '" target="_blank">ImmoScout24</a>';
-						if(typeof fb_id != 'undefined'){
-							content += '<div style="float:right;"><button type="button" place_id="' + this.custom_data.id + '" fb_id="' + fb_id + '" class="btn btn-success add_to_shortlist">Add To Shortlist</button></div>';
+						if(typeof user_id != 'undefined'){
+							content += '<div style="float:right;"><button type="button" place_id="' + this.custom_data.id + '" user_id="' + user_id + '" class="btn btn-success add_to_shortlist">Add To Shortlist</button></div>';
 						}
 						window.infowindow.setContent(content);
 						window.infowindow.open(window.search_map, this);
@@ -119,7 +119,7 @@ var initializeSearchMap = function() {
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 	window.search_map = new google.maps.Map(document.getElementById("search_map_canvas"), mapOptions);
-	centerMap(window.search_map);
+	//centerMap(window.search_map);
 	google.maps.event.addListener(window.search_map, "dragend", function() {
 		search();
 	});
@@ -194,7 +194,7 @@ var enableSliders = function() {
 
 var populateInterests = function(){
 	// do the search
-	$.post("http://yournexthome.dk/get_interests.php", {}, function(data) {
+	$.post(yournexthome_server + "interests_get.php", {}, function(data) {
 		var tagContent = '';
 		for(var interest in data){
 			tagContent += '<input type="checkbox" class="interest_class" value="'+ data[interest]['id'] + '"> ' + data[interest]['name'] + '<br>';
@@ -208,7 +208,7 @@ var populateInterests = function(){
 
 var populateTags = function(){
 	// do the search
-	$.post("http://yournexthome.dk/get_tags.php", {}, function(data) {
+	$.post(yournexthome_server + "tags_get.php", {}, function(data) {
 		var tagContent = '';
 		for(var tag in data){
 			tagContent += '<input type="checkbox" class="tag_class" value="'+ data[tag] + '"> ' + data[tag] + '<br>';
@@ -223,8 +223,8 @@ var populateTags = function(){
 var populateShortlist = function(){
 	$('#shortlist').html('');
 	if(typeof fb_id != 'undefined'){
-		$.post("http://yournexthome.dk/get_shortlist.php", {
-			'fb_id': fb_id
+		$.post(yournexthome_server + "favorites_get.php", {
+			'user_id': user_id
 			}, function(data) {
 				var shortlistContent = '<ul>';
 				for(var i in data){
@@ -242,8 +242,8 @@ var populateShortlist = function(){
 var addShortlistButtonClick = function(){
 	$(".add_to_shortlist").click(function(){
 		$(this).attr('disabled', 'disabled');
-		$.post("http://yournexthome.dk/update_shortlist.php", {
-			'fb_id': $(this).attr('fb_id'),
+		$.post(yournexthome_server + "favorites_update.php", {
+			'user_id': $(this).attr('user_id'),
 			'place_id': $(this).attr('place_id'),
 			'action': 'insert'
 		}, function(){
@@ -254,8 +254,8 @@ var addShortlistButtonClick = function(){
 
 var removeShortlistButtonClick = function(){
 	$(".remove_from_shortlist").click(function(){
-		$.post("http://yournexthome.dk/update_shortlist.php", {
-			'fb_id': $(this).attr('fb_id'),
+		$.post(yournexthome_server + "favorites_update.php", {
+			'user_id': $(this).attr('user_id'),
 			'place_id': $(this).attr('place_id'),
 			'action': 'remove'
 		}, function(){
@@ -263,3 +263,27 @@ var removeShortlistButtonClick = function(){
 		});
 	});
 };
+
+$(document).ready(function() {
+	// Berlin centrum sat som default
+	window.lat = 52.517474;
+	window.lng = 13.405526;
+
+	window.search_map_places = [];
+	window.search_map_places_new = [];
+	window.infowindow = new google.maps.InfoWindow();
+	initializeSearchMap();
+	populateInterests();
+	populateTags();
+	enableSliders();
+	populateShortlist();
+
+	$(function() {
+		$("#accordion").accordion({
+			collapsible: true,
+			heightStyle: "content",
+			active: false
+		});
+	});
+});
+

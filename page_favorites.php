@@ -1,16 +1,7 @@
 <?php
-session_start();
-require_once('admin_functions.php');
-require_once('../functions.php');
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="en">
-<?php echo get_head('Shortlisted Apartments - YourNextHome');?>
-<body>
+require_once('functions.php');
 
-<?php
-if(isset($_SESSION['admin']) && $_SESSION['admin'] == 3){
-	echo get_menu();
+if(isset($_SESSION['permission']) && $_SESSION['permission'] == 2){
 
 	$places_array = array();
 	$users_array = array();
@@ -23,25 +14,27 @@ if(isset($_SESSION['admin']) && $_SESSION['admin'] == 3){
 	$cursor = $collection->find();
 	foreach($cursor as $item){
 		// find places
-		$places_key = array('_id' => new MongoId($item['place_id']));
+		$places_key = array('_id' => new MongoId($item['place_id']), 'administrator' => $_SESSION['id']);
 		$return = array('url' => 1, 'title' => 1, 'area' => 1, '_id' => 0);
 		$place = $places->findOne($places_key, $return);
-		$place['id'] = $item['place_id'];
+		if($place !== null){
+			$place['id'] = $item['place_id'];
 
-		if(!isset($places_array[$place['id']])){
-			$places_array[$place['id']] = $place;
-		} 
+			if(!isset($places_array[$place['id']])){
+				$places_array[$place['id']] = $place;
+			} 
 
-		// find users
-		$users_key = array('fb_id' => $item['fb_id']);
-		$return = array('name' => 1, '_id' => 0);
-		$user = $users->findOne($users_key, $return);
-		$users_array[$item['fb_id']] = $user['name'];
-		
-		if(!isset($places_array[$place['id']]['users'])){
-			$places_array[$place['id']]['users'] = array();
+			// find users
+			$users_key = array('fb_id' => $item['fb_id']);
+			$return = array('name' => 1, '_id' => 0);
+			$user = $users->findOne($users_key, $return);
+			$users_array[$item['fb_id']] = $user['name'];
+	
+			if(!isset($places_array[$place['id']]['users'])){
+				$places_array[$place['id']]['users'] = array();
+			}
+			array_push($places_array[$place['id']]['users'], array('fb_id' => $item['fb_id'], 'name' => $user['name']));
 		}
-		array_push($places_array[$place['id']]['users'], array('fb_id' => $item['fb_id'], 'name' => $user['name']));
 	}
 	// close any open db's
 	close_db();
@@ -87,11 +80,5 @@ if(isset($_SESSION['admin']) && $_SESSION['admin'] == 3){
 	</div>
 
 	<?php
-
-} else {
-	header('Location:'.$_ADMINCONFIG['admin_url']);
-	exit;
 }
 ?>
-</body>
-</html>
