@@ -36,8 +36,8 @@ function fill_array($parent, $child){
 	return $child;
 }
 
-// calculates the user creation score
-function calc_user_creation_score($user){
+// calculates the profile score
+function calc_profile_score($user){
 	$score = 0;
 
 	$score += ($user['name'] !== '') ? 5 : 0;
