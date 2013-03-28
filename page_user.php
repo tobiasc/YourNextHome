@@ -41,6 +41,8 @@ if(isset($_SESSION['permission']) && $_SESSION['permission'] === 1){
 	$user = $collection->findOne($obj, $return);
 	$user = fill_array($return, $user);
 
+	$user_score = calc_user_creation_score($user);
+
 	// close any open db's
 	close_db();
 
@@ -55,7 +57,10 @@ if(isset($_SESSION['permission']) && $_SESSION['permission'] === 1){
 				}
 				?>
 				<h1><?php echo $user['name']; ?></h1>
-				<p><?php echo $user['email']; ?></p>
+				<p>User Score: <?php echo $user_score; ?>%</p>
+				<div class="progress">
+					<div class="bar" style="width: <?php echo $user_score; ?>%;"></div>
+				</div>
 			</div>
 
 			<div class="row">

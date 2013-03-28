@@ -35,4 +35,28 @@ function fill_array($parent, $child){
 
 	return $child;
 }
+
+// calculates the user creation score
+function calc_user_creation_score($user){
+	$score = 0;
+
+	$score += ($user['name'] !== '') ? 5 : 0;
+	$score += ($user['email'] !== '') ? 5 : 0;
+	$score += ($user['links'] !== '') ? 3 : 0;
+	$score += ($user['phone'] !== '') ? 3 : 0;
+	$score += ($user['country'] !== '') ? 1 : 0;
+	$score += ($user['city'] !== '') ? 1 : 0;
+	$score += ($user['street'] !== '') ? 1 : 0;
+	$score += ($user['street_number'] !== '') ? 1 : 0;
+	$score += ($user['schufa'] !== '') ? 7 : 0;
+	$score += ($user['work_contract'] !== '') ? 7 : 0;
+	$score += ($user['payslips'] !== '') ? 7 : 0;
+	$score += ($user['bank_statement'] !== '') ? 7 : 0;
+	$score += ($user['landlord_notes'] !== '') ? 7 : 0;
+	$score += ($user['facebook_id'] !== '') ? 20 : 0;
+	$score += ($user['linkedin_id'] !== '') ? 15 : 0;
+	$score += ($user['twitter_id'] !== '') ? 10 : 0;
+
+	return $score;
+}
 ?>
